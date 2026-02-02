@@ -3,24 +3,7 @@ import sqlite3
 import os
 
 app = Flask(__name__)
-
 DB_PATH = 'clicks.db'
-
-def get_count():
-    db = sqlite3.connect(DB_PATH)
-    row = db.execute('SELECT count FROM global_clicks').fetchone()
-    db.close()
-    return row[0]
-
-
-def increment_count():
-    db = sqlite3.connect(DB_PATH)
-    db.execute('UPDATE global_clicks SET count = count + 1')
-    db.commit()
-    row = db.execute('SELECT count FROM global_clicks').fetchone()
-    db.close()
-    return row[0]
-
 
 def init_db():
     if not os.path.exists(DB_PATH):
@@ -39,6 +22,22 @@ def init_db():
 
         print('Database created and initialized.')
 
+init_db()
+
+def get_count():
+    db = sqlite3.connect(DB_PATH)
+    row = db.execute('SELECT count FROM global_clicks').fetchone()
+    db.close()
+    return row[0]
+
+
+def increment_count():
+    db = sqlite3.connect(DB_PATH)
+    db.execute('UPDATE global_clicks SET count = count + 1')
+    db.commit()
+    row = db.execute('SELECT count FROM global_clicks').fetchone()
+    db.close()
+    return row[0]
 
 # ----------------------
 # Routes
@@ -58,5 +57,4 @@ def index():
 # ----------------------
 
 if __name__ == '__main__':
-    init_db()
     app.run()
