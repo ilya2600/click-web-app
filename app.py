@@ -2,27 +2,33 @@ from flask import Flask, render_template, request
 import sqlite3
 import os
 
-app = Flask(__name__)
 DB_PATH = 'clicks.db'
-
 def init_db():
     if not os.path.exists(DB_PATH):
         db = sqlite3.connect(DB_PATH)
 
         # Only ONE row, NO id
         db.execute('''
-            CREATE TABLE global_clicks (
+            CREATE TABLE IF NOT EXISTS global_clicks (
                 count INTEGER NOT NULL
             )
         ''')
 
-        db.execute('INSERT INTO global_clicks (count) VALUES (0)')
-        db.commit()
+        # Get ALL rows (0 or 1 expected)
+        rows = db.execute('SELECT * FROM global_clicks')
+        rows = rows.fetchall()
+        
+        # Count in Python - super clear!
+        if len(rows) == 0:
+            db.execute('INSERT INTO global_clicks (count) VALUES (0)')
+            db.commit()
+        
         db.close()
-
-        print('Database created and initialized.')
+        print('Database ready.')
 
 init_db()
+
+app = Flask(__name__)
 
 def get_count():
     db = sqlite3.connect(DB_PATH)
